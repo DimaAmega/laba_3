@@ -20,7 +20,7 @@ public:
 };
 class Calculate {
 private:
-	char a[20]="";
+	char a[20];
 	double b;
 public:
 	Calculate(char *v,double h) {
@@ -35,7 +35,7 @@ public:
 	char* string() {
 		return a;
 	}
-	double Res() { return b; }
+	double Res() const { return b; }
 };
 
 class ParameterizedCalculate : public ::testing::TestWithParam <Calculate >
@@ -43,24 +43,30 @@ class ParameterizedCalculate : public ::testing::TestWithParam <Calculate >
 protected:
 	Calculate w;
 public:
-	ParameterizedCalculate() :w (GetParam())
+	ParameterizedCalculate() : w(GetParam())
 	{
 
 	}
 };
 
-Calculate e("332-331", 1);
+Calculate e0("(32-22)+5",15);
+Calculate e1("5-12", -7);
+Calculate e2("5+2", 7);
+Calculate e[3] = {e0,e1,e2};
 ////// Для параметризованного счёта...
 TEST_P(ParameterizedCalculate, can_Calculete_True)
 {
 	Arifmetics s;
-	s.PushStroka(GetParam().string());
-
-	EXPECT_EQ(e.Res(), s.calculate());
+	Calculate x = GetParam();
+	s.PushStroka(x.string());
+	s.Lexem();
+	s.Polsky();
+	EXPECT_EQ(x.Res(), s.calculate());
 }
+
 INSTANTIATE_TEST_CASE_P(Instantiation3,
 	ParameterizedCalculate,
-	::testing::Values(e));
+	::testing::ValuesIn(e));
 
 class ParameterizedStringTrue : public ParameterizedStringError
 {

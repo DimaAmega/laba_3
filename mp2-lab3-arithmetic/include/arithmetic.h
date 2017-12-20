@@ -98,32 +98,52 @@ char* Arifmetics::GetOnestring() {
 int Arifmetics::SetVariable() {
 	int t = 0;
 	for (int i = 0; i < c[0].GetLength(); i++)
+
 		if (c[i].GetType() == -3) {
 			t = 1;
 			double k;
-			if ((c[i].GetName())[0] != '-') {
-				cout << "vvedite peremennuu ";
-				c[i].Printvar();
-				cin >> k;
-			}
-			else {
-				cout << "vvedite peremennuu ";
-				char a[10] = "";
-				strcpy(a, c[i].GetName());
-				string b(a);
-				b.erase(0, 1);
-				int i = 0;
-				while (i < b.length()) {
-					a[i] = b[i];
-					i++;
+			int y = 0;
+
+			for (int j = 0; j < i; j++) {
+
+				if ((c[j].GetType() == -3) && (!strcmp(c[j].GetName(), c[i].GetName()))) {
+					c[i].SetNumber(c[j].GetNumber());
+					y = 1;
+					break;
 				}
-				a[i] = '\0';
-				c[i].SetChar(a);
-				c[i].Printvar();
-				cin >> k;
-				k = k*(-1);
+				
 			}
-			c[i].SetNumber(k);
+
+			if (y == 0) {
+				if ((c[i].GetName())[0] != '-') {
+					cout << "vvedite peremennuu ";
+					c[i].Printvar();
+					cin >> k;
+				}
+				else {
+					cout << "vvedite peremennuu ";
+					char a[10] = "";
+					strcpy(a, c[i].GetName());
+					string b(a);
+					b.erase(0, 1);
+					int i = 0;
+					while (i < b.length()) {
+						a[i] = b[i];
+						i++;
+					}
+					a[i] = '\0';
+					c[i].SetChar(a);
+					c[i].Printvar();
+					cin >> k;
+					k = k*(-1);
+				}
+				c[i].SetNumber(k);
+			}
+
+
+
+
+			
 		}
 	return t;
 }
@@ -149,7 +169,10 @@ void Arifmetics:: PrintLexem() {
 			break;
 		}
 		case -2: {
-			cout << "|"<< c[i].GetNumber() << "| ";
+			cout << "|";
+			cout.precision(10);
+			cout << c[i].GetNumber();
+			cout << "| ";
 			break;
 		}
 		case -3: {
@@ -222,18 +245,18 @@ void Arifmetics::Polsky() {
 			b.push(0);
 			break;
 		}
-		case 1: {
+		case 1: { //+
 			int z = 0;
-			if (b.check() <= 2) b.push(1); else while (b.check() > 2) {
+			if (b.check() < 2) b.push(1); else while (b.check() >= 2) {
 				d[q++].SetType(b.pop());
 				z = 1;
 			} 
 			if (z == 1) b.push(1);
 			break;
 		}
-		case 2: {
+		case 2: { //-
 			int z = 0;
-			if (b.check() <= 2) b.push(2); else while (b.check() > 2) {
+			if ((b.check() <= 2)||(b.IsEmpty())) b.push(2); else while (b.check() > 2) {
 				d[q++].SetType(b.pop());
 				z = 1;
 			}
@@ -345,8 +368,9 @@ bool Arifmetics::Check() {
 	}
 		++i;
 	}
+		int h = a.getInd();
 		if (error!=true) {
-			for (int i = 0; i <= a.getInd(); i++) 
+			for (int i = 0;i<=h; i++)
 		    if (a.pop() == 0) {
 				error = true; cout << "error more '(' ";
 			} 
@@ -391,7 +415,7 @@ void Arifmetics:: Lexem() {
 								k++;
 								i++;
 							}
-							char a[10] = "";
+							char a[20] = "";
 							strncpy(a, &onestring[d], k + 1);
 							a[k + 1] = '\0';
 							c[q].SetType(-3);
@@ -407,7 +431,7 @@ void Arifmetics:: Lexem() {
 								k++;
 								i++;
 							}
-							char a[10] = "";
+							char a[20] = "";
 							strncpy(a, &onestring[d], k + 1);
 							a[k + 1] = '\0';
 							double res = atof(a);
@@ -432,7 +456,7 @@ void Arifmetics:: Lexem() {
 								k++;
 								i++;
 							}
-							char a[10] = "";
+							char a[20] = "";
 							strncpy(a, &onestring[d], k + 1);
 							a[k + 1] = '\0';
 							c[q].SetType(-3);
@@ -448,7 +472,7 @@ void Arifmetics:: Lexem() {
 								k++;
 								i++;
 							}
-							char a[10] = "";
+							char a[20] = "";
 							strncpy(a, &onestring[d], k + 1);
 							a[k + 1] = '\0';
 							double res = atof(a);
@@ -481,7 +505,7 @@ void Arifmetics:: Lexem() {
 				c[q].SetType(-3);
 				int z = 1;
 				while ((getPriority(++i) == -3)&(i!= strlen(onestring))) ++z;
-				char name[5] = "";
+				char name[10] = "";
 				strncpy(name, &onestring[i-z], z);
 				c[q].SetChar(name);
 				q++;
@@ -493,13 +517,17 @@ void Arifmetics:: Lexem() {
 				double res = Num(i);
 				int y = 0;
 				
-				while ((getPriority(++i) == -2)&(y == 0)&(i!= strlen(onestring))) if (onestring[i] == '.') y = 1; else
-				{
-					res = res*10 + Num(i);
-					++z;
-				}
+				while ((i != strlen(onestring) && (getPriority(++i) == -2)&&(y == 0)))
+					if (onestring[i] == '.') 
+						y = 1; 
+					else
+					{
+						res = res * 10 + Num(i);
+						++z;
+					}
+
 				int u = i-1; // индекс точки
-				while ((getPriority(i) == -2)&(y==1)&(i != strlen(onestring) - 1)) {
+				while ((i != strlen(onestring))&&(getPriority(i) == -2)&&(y==1)) {
 					res = res * 10 + Num(i);
 					++z;
 					++i;

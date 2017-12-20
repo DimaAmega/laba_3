@@ -32,12 +32,10 @@ int main()
 			} while ((t!=0)&&(!strcmp(b, "yes")));
 		}
 		else  cout << "vse ne normalno"<<endl;
-		cout << "Postorim?";
+		cout << "Povtorim?";
 		cin >> b;
 	} while (!strcmp(b,"yes"));
 	system("cls");  
-
-
 	return 0;
 }
 
