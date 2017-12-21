@@ -10,7 +10,7 @@ int main()
 	do {
 		system("cls");
 		Arifmetics a;
-		a.SetStroka();
+		a.PushStroka("2+3*(3*1)");
 		if ((a.Check()) == true) {
 			a.Lexem();
 			int t;

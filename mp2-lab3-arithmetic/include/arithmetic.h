@@ -62,12 +62,15 @@ private:
 	const char priority[6] = { ')','(','+','-','*','/'};
 	const int m_priority[6] = {-1,0,1,1,2,2};
 	bool error = false;
-	char onestring[50];
+	char onestring[1000];
 	Stack<int> a;
 	Stack <int> b;
 	Lexems * c;
 	Lexems * d;
 public:
+	Lexems* GetPolish() {
+		return d;
+	}
 	char* GetOnestring();
 	int  SetVariable();
 	double calculate();
@@ -111,7 +114,17 @@ int Arifmetics::SetVariable() {
 					y = 1;
 					break;
 				}
-				
+
+				if ((c[j].GetType() == -3) && (!strcmp(c[j].GetName(), &c[i].GetName()[1]))) {
+					c[i].SetNumber(-1*c[j].GetNumber());
+					y = 1;
+					break;
+				}
+				if ((c[j].GetType() == -3) && (!strcmp(&c[j].GetName()[1],c[i].GetName()))) {
+					c[i].SetNumber(-1 * c[j].GetNumber());
+					y = 1;
+					break;
+				}
 			}
 
 			if (y == 0) {
@@ -239,6 +252,7 @@ void Arifmetics::Polsky() {
 			while (b.check() != 0)
 		    d[q++].SetType(b.pop());
 			b.pop(); //удаляем открытую скобку
+
 			break;
 		}
 		case 0: {
@@ -256,7 +270,7 @@ void Arifmetics::Polsky() {
 		}
 		case 2: { //-
 			int z = 0;
-			if ((b.check() <= 2)||(b.IsEmpty())) b.push(2); else while (b.check() > 2) {
+			if ((b.check() < 2)||(b.IsEmpty())) b.push(2); else while (b.check() >= 2) {
 				d[q++].SetType(b.pop());
 				z = 1;
 			}
@@ -284,9 +298,9 @@ void Arifmetics::Polsky() {
 int Arifmetics:: Num(int i) {
 	return onestring[i] - '0';
 }
-Arifmetics::Arifmetics() : a(20),b(20) {
-	c = new Lexems[50];
-	d = new Lexems[50];
+Arifmetics::Arifmetics() : a(1000),b(1000) {
+	c = new Lexems[1000];
+	d = new Lexems[1000];
 }
 void Arifmetics::PrintString() {
 	for (int i = 0; i < strlen(onestring); i++) cout << onestring[i];
